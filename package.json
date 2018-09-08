@@ -1,8 +1,10 @@
 {
     "private": true,
     "dependencies": {
-        "bluebird": "^3.5.2",
+        "chai": "^4.1.2",
+        "dirty-chai": "^2.0.1",
         "dotenv": "^6.0.0",
-        "ldapjs": "^1.0.2"
+        "lodash": "^4.17.10",
+        "promised-ldap": "cs125-illinois/promised-ldap"
     }
 }

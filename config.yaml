@@ -1,0 +1,3 @@
+base: "OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=AD,DC=UILLINOIS,DC=EDU"
+groups:
+  - cs-125-stu

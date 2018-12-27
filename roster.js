@@ -11,14 +11,17 @@ chai.use(require('dirty-chai'))
 require('dotenv').config()
 const LDAP = require('promised-ldap')
 
-const classesDN = "OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=AD,DC=UILLINOIS,DC=EDU"
+//const classesDN = "OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=AD,DC=UILLINOIS,DC=EDU"
+const classesDN = "OU=Sections,OU=Class Rosters,OU=Register,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
 const peopleDN = "OU=People,DC=AD,DC=UILLINOIS,DC=EDU"
+
+const debug = require('debug')('roster')
 
 const client = new LDAP({ url: 'ldap://ad.uillinois.edu/' })
 client.starttls({}, []).then(async () => {
   const login = await client.bind(process.env.ADUSER, process.env.ADPASSWORD)
   const results = await client.search(classesDN, {
-    filter: `(samaccountname=${ process.env.ADGROUP })`, scope: 'sub'
+    filter: `(CN=CS 125 AL2 2019 Spring*)`, scope: 'sub'
   })
   expect(results.entries.length).to.equal(1)
 
@@ -38,6 +41,8 @@ client.starttls({}, []).then(async () => {
     })
     expect(results.entries.length).to.equal(1)
     const { givenName: first, sn: last, mail: email } = results.entries[0].object
+    console.log(results.entries[0].object)
+    process.exit(0)
     expect(students).to.not.have.property(email)
     students[email] = {
       email,
@@ -49,6 +54,8 @@ client.starttls({}, []).then(async () => {
   expect(_.keys(students).length).to.equal(netIDs.length)
 
   console.log(JSON.stringify(students, null, 2))
+  console.log(_.keys(students).length)
+
   client.unbind()
 })
 

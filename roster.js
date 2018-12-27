@@ -11,8 +11,8 @@ chai.use(require('dirty-chai'))
 require('dotenv').config()
 const LDAP = require('promised-ldap')
 
-//const classesDN = "OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=AD,DC=UILLINOIS,DC=EDU"
-const classesDN = "OU=Sections,OU=Class Rosters,OU=Register,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+const classesDN = "OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=AD,DC=UILLINOIS,DC=EDU"
+//const classesDN = "OU=Sections,OU=Class Rosters,OU=Register,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
 const peopleDN = "OU=People,DC=AD,DC=UILLINOIS,DC=EDU"
 
 const debug = require('debug')('roster')
@@ -21,8 +21,9 @@ const client = new LDAP({ url: 'ldap://ad.uillinois.edu/' })
 client.starttls({}, []).then(async () => {
   const login = await client.bind(process.env.ADUSER, process.env.ADPASSWORD)
   const results = await client.search(classesDN, {
-    filter: `(CN=CS 125 AL2 2019 Spring*)`, scope: 'sub'
+    filter: `(CN=cs-125-*)`, scope: 'sub'
   })
+  console.log(results.entries)
   expect(results.entries.length).to.equal(1)
 
   const netIDs = _(results.entries[0].object.member).map(member => {

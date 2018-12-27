@@ -6,6 +6,7 @@
         "dirty-chai": "^2.0.1",
         "dotenv": "^6.2.0",
         "lodash": "^4.17.11",
+        "minimist": "^1.2.0",
         "promised-ldap": "cs125-illinois/promised-ldap"
     }
 }

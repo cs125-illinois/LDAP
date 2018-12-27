@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+'use strict'
+
+require('dotenv').config()
+const _ = require('lodash')
+const chai = require('chai')
+const expect = chai.expect
+const LDAP = require('promised-ldap')
+const debug = require('debug')('add')
+const argv = require('minimist')(process.argv.slice(2))
+
+const gradersGroup = `CN=cs-125-grd,OU=CS,OU=Graders,OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu`
+
+const client = new LDAP({ url: 'ldap://ad.uillinois.edu/' })
+client.starttls({}, []).then(async () => {
+  const login = await client.bind(process.env.ADUSER, process.env.ADPASSWORD)
+  const results = await client.search(gradersGroup, { scope: 'sub' })
+
+  try {
+    var existingNetIDs = _(results.entries[0].object.member).map(member => {
+      const [ unused, netID, group ] = /^CN=(.+?),OU=(.+?),/.exec(member)
+      return group === 'People' ? netID : null
+    }).filter(member => {
+      return member !== null
+    }).keyBy(netID => { return netID }).value()
+  } catch (err) {
+    var existingNetIDs = {}
+  }
+
+  console.log(_.keys(existingNetIDs).length)
+
+  for (const netID of argv._) {
+    if (netID in existingNetIDs) {
+      continue
+    }
+    await client.modify(gradersGroup, {
+      operation: 'add',
+      modification: {
+        member: [ netID ]
+      }
+    })
+  }
+
+  client.unbind()
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.log(reason.stack || reason)
+})

@@ -1,10 +1,11 @@
 {
     "private": true,
     "dependencies": {
-        "chai": "^4.1.2",
+        "chai": "^4.2.0",
+        "debug": "^4.1.1",
         "dirty-chai": "^2.0.1",
-        "dotenv": "^6.0.0",
-        "lodash": "^4.17.10",
+        "dotenv": "^6.2.0",
+        "lodash": "^4.17.11",
         "promised-ldap": "cs125-illinois/promised-ldap"
     }
 }
